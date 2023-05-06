@@ -3,8 +3,11 @@ package com.github.kr328.ifw;
 import android.app.ActivityManagerInternal;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.IPackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Binder;
+import android.os.RemoteException;
+import android.os.SystemProperties;
 import android.util.Log;
 
 import com.android.server.LocalServices;
@@ -18,6 +21,8 @@ import java.util.stream.Collectors;
 public final class Firewall {
     private static boolean initialized;
     private static IntentFirewall instance;
+    private static final boolean isFlyme9OrAbove = SystemProperties.get("ro.build.display.id", "unknown").toUpperCase().contains("FLYME")
+            && SystemProperties.getInt("ro.build.flyme.version", 0) >= 9;
 
     private static void tryGetIntentFirewall() {
         Log.d(Main.TAG, "Try get intent firewall");
@@ -68,7 +73,8 @@ public final class Firewall {
                 List<ResolveInfo> result,
                 FilterType type,
                 Intent intent,
-                String resolvedType
+                String resolvedType,
+                IPackageManager pm
         );
 
         enum FilterType {
@@ -88,7 +94,8 @@ public final class Firewall {
                 final List<ResolveInfo> result,
                 final FilterType type,
                 final Intent intent,
-                final String resolvedType
+                final String resolvedType,
+                final IPackageManager pm
         ) {
             if (intent == null)
                 return result;
@@ -105,26 +112,61 @@ public final class Firewall {
                         case ACTIVITY:
                             intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
                             intent.setPackage(info.activityInfo.packageName);
-
-                            return impl.checkStartActivity(
-                                    intent,
-                                    callingUid,
-                                    callingPid,
-                                    resolvedType,
-                                    info.activityInfo.applicationInfo
-                            );
+                            if (!isFlyme9OrAbove) {
+                                return impl.checkStartActivity(
+                                        intent,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.activityInfo.applicationInfo
+                                );
+                            } else {
+                                String callingPackage = null;
+                                try {
+                                    String[] packages = pm.getPackagesForUid(callingUid);
+                                    if (packages != null && packages.length > 0)
+                                        callingPackage = packages[0];
+                                } catch (RemoteException ignored) {
+                                }
+                                return impl.checkStartActivity(
+                                        intent,
+                                        callingPackage,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.activityInfo.applicationInfo
+                                ) == 1;
+                            }
                         case SERVICE:
                             intent.setComponent(ComponentName.createRelative(info.serviceInfo.packageName, info.serviceInfo.name));
                             intent.setPackage(info.serviceInfo.packageName);
-
-                            return impl.checkService(
-                                    new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
-                                    intent,
-                                    callingUid,
-                                    callingPid,
-                                    resolvedType,
-                                    info.serviceInfo.applicationInfo
-                            );
+                            if (!isFlyme9OrAbove) {
+                                return impl.checkService(
+                                        new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
+                                        intent,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.serviceInfo.applicationInfo
+                                );
+                            } else {
+                                String callingPackage = null;
+                                try {
+                                    String[] packages = pm.getPackagesForUid(callingUid);
+                                    if (packages != null && packages.length > 0)
+                                        callingPackage = packages[0];
+                                } catch (RemoteException ignored) {
+                                }
+                                return impl.checkService(
+                                        new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
+                                        intent,
+                                        callingPackage,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.serviceInfo.applicationInfo
+                                );
+                            }
                     }
 
                     throw new IllegalArgumentException("unreachable");
