@@ -66,7 +66,8 @@ public class Proxy extends IPackageManager.Stub {
                         result.getList(),
                         Firewall.IntentFirewall.FilterType.ACTIVITY,
                         intent,
-                        resolvedType
+                        resolvedType,
+                        original
                 )
         );
     }
@@ -112,7 +113,8 @@ public class Proxy extends IPackageManager.Stub {
                         result.getList(),
                         Firewall.IntentFirewall.FilterType.ACTIVITY,
                         intent,
-                        resolvedType
+                        resolvedType,
+                        original
                 )
         );
     }
@@ -147,7 +149,8 @@ public class Proxy extends IPackageManager.Stub {
                         result.getList(),
                         Firewall.IntentFirewall.FilterType.ACTIVITY,
                         intent,
-                        resolvedType
+                        resolvedType,
+                        original
                 )
         );
     }
@@ -182,7 +185,8 @@ public class Proxy extends IPackageManager.Stub {
                         result.getList(),
                         Firewall.IntentFirewall.FilterType.ACTIVITY,
                         intent,
-                        resolvedType
+                        resolvedType,
+                        original
                 )
         );
     }
@@ -212,7 +216,8 @@ public class Proxy extends IPackageManager.Stub {
                         result.getList(),
                         Firewall.IntentFirewall.FilterType.SERVICE,
                         intent,
-                        resolvedType
+                        resolvedType,
+                        original
                 )
         );
     }
@@ -241,7 +246,8 @@ public class Proxy extends IPackageManager.Stub {
                         result.getList(),
                         Firewall.IntentFirewall.FilterType.SERVICE,
                         intent,
-                        resolvedType
+                        resolvedType,
+                        original
                 )
         );
     }
