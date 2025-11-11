@@ -6,8 +6,7 @@ import android.os.Process;
 import android.util.Log;
 
 import com.github.kr328.magic.services.ServiceManagerProxy;
-import com.github.kr328.zloader.BinderInterceptors;
-import com.github.kr328.zloader.ZygoteLoader;
+import com.v7878.zygisk.ZygoteLoader;
 
 public class Main {
     public static final String TAG = "IFWEnhance";

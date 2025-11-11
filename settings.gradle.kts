@@ -4,18 +4,18 @@ include(":module", ":hideapi")
 
 pluginManagement {
     repositories {
-        maven(url = "https://maven.kr328.app/releases")
         mavenCentral()
         google()
+        maven(url = "https://jitpack.io")
         mavenLocal()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        maven(url = "https://maven.kr328.app/releases")
         mavenCentral()
         google()
+        maven(url = "https://jitpack.io")
         mavenLocal()
     }
     versionCatalogs {

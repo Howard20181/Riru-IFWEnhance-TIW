@@ -2,12 +2,12 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 
 plugins {
-    val agp = "8.1.2"
-    val zygote = "3.1"
+    val zygote = "1bcced056"
+    val agp = "8.13.1"
 
     id("com.android.library") version agp apply false
     id("com.android.application") version agp apply false
-    id("com.github.kr328.gradle.zygote") version zygote apply false
+    id("com.github.vova7878.ZygoteLoader") version zygote apply false
 }
 
 subprojects {
@@ -23,7 +23,7 @@ subprojects {
                 }
 
                 minSdk = 26
-                targetSdk = 34
+                targetSdk = 36
 
                 versionName = "v22TIW"
                 versionCode = 22000
@@ -47,6 +47,6 @@ subprojects {
     }
 }
 
-task("clean", type = Delete::class) {
+tasks.register("clean", Delete::class) {
     delete(layout.buildDirectory)
 }
